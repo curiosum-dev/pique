@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :pique,
   auth: true,
@@ -10,4 +10,3 @@ config :pique,
       keyfile: "bar"
     ]
   ]
-
