@@ -207,6 +207,10 @@ defmodule Pique.Smtp do
     {:error, ~c"530 Use PLAIN or LOGIN", state}
   end
 
+  def handle_STARTTLS(state) do
+    state
+  end
+
   @doc """
   Handles incoming unkown request. Telling client that
   it does not understand.
