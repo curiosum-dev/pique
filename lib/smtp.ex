@@ -10,7 +10,7 @@ defmodule Pique.Smtp do
   @spec init(any, any, any, any) :: {:ok, [...], %{}} | {:stop, :normal, [...]}
   def init(hostname, session_count, _address, _options) do
     if session_count > Application.get_env(:pique, :session_limit, 40) do
-      Logger.warn("SMTP server connection limit exceeded")
+      Logger.warning("SMTP server connection limit exceeded")
       {:stop, :normal, ["421", hostname, " is too busy to accept mail right now"]}
     else
       banner = [hostname, " ESMTP"]
