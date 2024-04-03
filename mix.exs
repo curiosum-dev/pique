@@ -7,7 +7,7 @@ defmodule Pique.MixProject do
       version: "0.1.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
-      elixirc_paths: elixirc_paths(Mix.env),
+      elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       name: "Pique",
       source_url: "https://github.com/maxneuvians/pique",
@@ -16,7 +16,7 @@ defmodule Pique.MixProject do
         main: "Pique"
       ],
       description: description(),
-      package: package(),
+      package: package()
     ]
   end
 
@@ -35,7 +35,7 @@ defmodule Pique.MixProject do
   defp deps do
     [
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
-      {:gen_smtp, "~> 0.15.0"}
+      {:gen_smtp, "~> 1.2.0"}
     ]
   end
 
