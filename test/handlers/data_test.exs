@@ -8,5 +8,4 @@ defmodule Pique.Handlers.DATATest do
       assert handle(%{}) == {:ok, %{}}
     end
   end
-
 end

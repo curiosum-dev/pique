@@ -6,9 +6,8 @@ defmodule Pique.Handlers.MAIL do
   """
   @behaviour Pique.Behaviours.Handler
 
-  @spec handle(String.t) :: {:ok, String.t}
+  @spec handle(String.t()) :: {:ok, String.t()}
   def handle(email) do
     {:ok, email}
   end
-
 end

@@ -7,9 +7,8 @@ defmodule Pique.Handlers.AUTH do
   """
   @behaviour Pique.Behaviours.Handler
 
-  @spec handle({String.t, String.t}) :: {:ok, any}
+  @spec handle({String.t(), String.t()}) :: {:ok, any}
   def handle({_username, _password}) do
     {:ok, :empty}
   end
-
 end

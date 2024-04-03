@@ -8,5 +8,4 @@ defmodule Pique.Handlers.RCPTTest do
       assert handle(%{}) == {:ok, %{}}
     end
   end
-
 end

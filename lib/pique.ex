@@ -25,16 +25,17 @@ defmodule Pique do
 
   @spec start(any, any) :: {:error, any} | {:ok, pid}
   def start(_type, _args) do
-
     smtp_options = Application.get_env(:pique, :smtp_opts, [])
 
     children = [
       %{
         id: :gen_smtp_server,
-        start: {:gen_smtp_server, :start_link, [
-          Application.get_env(:pique, :callback, Pique.Smtp),
-          [smtp_options]
-        ]}
+        start:
+          {:gen_smtp_server, :start_link,
+           [
+             Application.get_env(:pique, :callback, Pique.Smtp),
+             [smtp_options]
+           ]}
       }
     ]
 
@@ -48,7 +49,8 @@ defmodule Pique do
   @spec validate_ssl_options(any) :: nil
   def validate_ssl_options(smtp_options) do
     if Application.get_env(:pique, :auth) == true do
-      if !Keyword.has_key?(smtp_options, :protocol) or Keyword.get(smtp_options, :protocol) == :tcp do
+      if !Keyword.has_key?(smtp_options, :protocol) or
+           Keyword.get(smtp_options, :protocol) == :tcp do
         Logger.error("Pique auth set to true, but protocol needs to be :ssl")
         exit(:shutdown)
       end
@@ -69,7 +71,6 @@ defmodule Pique do
         Logger.error("Pique auth set to true, but no keyfile specified")
         exit(:shutdown)
       end
-
     end
   end
 end

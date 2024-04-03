@@ -10,5 +10,4 @@ defmodule Pique.Handlers.DATA do
   def handle(state) do
     {:ok, state}
   end
-
 end

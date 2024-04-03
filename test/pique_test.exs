@@ -15,31 +15,36 @@ defmodule PiqueTest do
 
     test "exits if auth is set to true, protocol is tcp" do
       Application.put_env(:pique, :auth, true)
-      assert catch_exit(validate_ssl_options([protocol: :tcp]))
+      assert catch_exit(validate_ssl_options(protocol: :tcp))
       Application.delete_env(:pique, :auth)
     end
 
     test "exits if auth is set to true, protocol is ssl, no sessionoptions" do
       Application.put_env(:pique, :auth, true)
-      assert catch_exit(validate_ssl_options([protocol: :ssl]))
+      assert catch_exit(validate_ssl_options(protocol: :ssl))
       Application.delete_env(:pique, :auth)
     end
 
     test "exits if auth is set to true protocol is ssl, sessionoptions are set, certfile is missing" do
       Application.put_env(:pique, :auth, true)
-      assert catch_exit(validate_ssl_options([protocol: :ssl, sessionoptions: []]))
+      assert catch_exit(validate_ssl_options(protocol: :ssl, sessionoptions: []))
       Application.delete_env(:pique, :auth)
     end
 
     test "exits if auth is set to true protocol is ssl, sessionoptions are set, keyfile is missing" do
       Application.put_env(:pique, :auth, true)
-      assert catch_exit(validate_ssl_options([protocol: :ssl, sessionoptions: [certfile: "foo"]]))
+      assert catch_exit(validate_ssl_options(protocol: :ssl, sessionoptions: [certfile: "foo"]))
       Application.delete_env(:pique, :auth)
     end
 
     test "passes if auth is set to true protocol is ssl, sessionoptions are set, certfile is set, keyfile is set" do
       Application.put_env(:pique, :auth, true)
-      assert validate_ssl_options([protocol: :ssl, sessionoptions: [certfile: "foo", keyfile: "bar"]]) == nil
+
+      assert validate_ssl_options(
+               protocol: :ssl,
+               sessionoptions: [certfile: "foo", keyfile: "bar"]
+             ) == nil
+
       Application.delete_env(:pique, :auth)
     end
   end

@@ -11,9 +11,8 @@ defmodule Pique.Senders.LoggerTest do
 
     test "logs the passed state" do
       assert capture_log(fn ->
-        send(%{data: "foo"})
-      end) =~ "Current state: %{data: \"foo\"}"
+               send(%{data: "foo"})
+             end) =~ "Current state: %{data: \"foo\"}"
     end
   end
-
 end

@@ -8,5 +8,4 @@ defmodule Pique.Handlers.AUTHTest do
       assert handle({"username", "password"}) == {:ok, :empty}
     end
   end
-
 end

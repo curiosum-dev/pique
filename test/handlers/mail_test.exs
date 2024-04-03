@@ -8,5 +8,4 @@ defmodule Pique.Handlers.MAILTest do
       assert handle(%{}) == {:ok, %{}}
     end
   end
-
 end
