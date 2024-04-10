@@ -39,38 +39,7 @@ defmodule Pique do
       }
     ]
 
-    # Check if SSL is configured properly
-    validate_ssl_options(smtp_options)
-
     opts = [strategy: :one_for_one, name: Pique.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  @spec validate_ssl_options(any) :: nil
-  def validate_ssl_options(smtp_options) do
-    if Application.get_env(:pique, :auth) == true do
-      if !Keyword.has_key?(smtp_options, :protocol) or
-           Keyword.get(smtp_options, :protocol) == :tcp do
-        Logger.error("Pique auth set to true, but protocol needs to be :ssl")
-        exit(:shutdown)
-      end
-
-      if !Keyword.has_key?(smtp_options, :sessionoptions) do
-        Logger.error("Pique auth set to true, but no sessionoptions defined")
-        exit(:shutdown)
-      end
-
-      options = smtp_options[:sessionoptions]
-
-      if !Keyword.has_key?(options, :certfile) do
-        Logger.error("Pique auth set to true, but no certfile specified")
-        exit(:shutdown)
-      end
-
-      if !Keyword.has_key?(options, :keyfile) do
-        Logger.error("Pique auth set to true, but no keyfile specified")
-        exit(:shutdown)
-      end
-    end
   end
 end
