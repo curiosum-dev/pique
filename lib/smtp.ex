@@ -172,7 +172,7 @@ defmodule Pique.Smtp do
   @spec handle_VRFY(any, any) ::
           {:error, [32 | 50 | 53 | 78 | 101 | 111 | 114 | 115 | 116 | 117, ...], any}
   def handle_VRFY(address, state) do
-    Logger.info("VRFY for #{address}")
+    Logger.info("VRFY for #{inspect(address)}")
     {:error, ~c"252 Not sure", state}
   end
 
@@ -217,8 +217,8 @@ defmodule Pique.Smtp do
   """
   @spec handle_other(any, any, any) :: {charlist(), any}
   def handle_other(command, _args, state) do
-    Logger.info(command)
-    {~c"500 Error: command not recognized : #{command}", state}
+    Logger.info(inspect(command))
+    {~c"500 Error: command not recognized : #{inspect(command)}", state}
   end
 
   @doc """
