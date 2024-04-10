@@ -217,8 +217,13 @@ defmodule Pique.Smtp do
   """
   @spec handle_other(any, any, any) :: {charlist(), any}
   def handle_other(command, _args, state) do
-    Logger.info(inspect(command))
-    {~c"500 Error: command not recognized : #{inspect(command)}", state}
+    Logger.info("other: #{inspect(command)}")
+    {[~c"500 Error: command not recognized : '", command, ~c"'"], state}
+  end
+
+  def handle_error(error_class, details, state) do
+    Logger.warning("Error: #{inspect(error_class)}, #{inspect(details)}")
+    {:ok, state}
   end
 
   @doc """
