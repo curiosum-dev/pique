@@ -34,7 +34,7 @@ defmodule Pique do
           {:gen_smtp_server, :start,
            [
              Application.get_env(:pique, :callback, Pique.Smtp),
-             [smtp_options]
+             smtp_options
            ]}
       }
     ]
