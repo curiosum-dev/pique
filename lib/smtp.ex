@@ -7,7 +7,7 @@ defmodule Pique.Smtp do
   exceeds the allowed session count. If it does, responds with an error.
   Otherwise returns the expected banner message.
   """
-  @spec init(any, any, any, any) :: {:ok, [...], %{}} | {:stop, :normal, [...]}
+  @spec init(any(), any(), any(), any()) :: {:ok, [...], %{}} | {:stop, :normal, [...]}
   def init(hostname, session_count, _address, _options) do
     if session_count > Application.get_env(:pique, :session_limit, 40) do
       Logger.warning("SMTP server connection limit exceeded")
@@ -23,7 +23,7 @@ defmodule Pique.Smtp do
   Handles incoming DATA request. Matches if the message is empty and
   returns an error.
   """
-  @spec handle_DATA(any, any, any, map) :: {:error, charlist(), map}
+  @spec handle_DATA(any(), any(), String.t(), map()) :: {:error, charlist(), map()}
   def handle_DATA(_from, _to, "", state) do
     {:error, ~c"552 Message too small", state}
   end
@@ -32,8 +32,8 @@ defmodule Pique.Smtp do
   # handler. If the DATA handler returns an `{:ok, state}` then
   # passes the state to the defined send handler. Otherwise returns
   # relevant error messages.
-  @spec handle_DATA(any, any, String.t(), map) ::
-          {:ok, String.t(), any} | {:error, charlist(), map}
+  @spec handle_DATA(any(), any(), String.t(), map()) ::
+          {:ok, String.t(), any()} | {:error, charlist(), map()}
   def handle_DATA(_from, _to, data, state) do
     Logger.info("Received DATA")
     state = Map.put(state, :body, data)
@@ -60,7 +60,7 @@ defmodule Pique.Smtp do
   If the `auth` config is set to true, it automatically adds in
   `AUTH` and `STARTTLS` extensions.
   """
-  @spec handle_EHLO(any, any, map) :: {:ok, [any], map}
+  @spec handle_EHLO(any(), any(), map()) :: {:ok, [any()], map()}
   def handle_EHLO(hostname, extensions, state) do
     Logger.info("EHLO from #{inspect(hostname)}")
 
@@ -80,7 +80,7 @@ defmodule Pique.Smtp do
   @doc """
   Handles incoming HELO request and returns a limit of 640Kb.
   """
-  @spec handle_HELO(any, map) :: {:ok, 655_360, map}
+  @spec handle_HELO(any(), map()) :: {:ok, 655_360, map()}
   def handle_HELO(hostname, state) do
     Logger.info("HELO from #{inspect(hostname)}")
     {:ok, 655_360, state}
@@ -91,7 +91,7 @@ defmodule Pique.Smtp do
   the defined MAIL handler. If the handler passes then adds the
   from address to the state.
   """
-  @spec handle_MAIL(any, map) :: {:ok, %{from: map}} | {:error, charlist(), map}
+  @spec handle_MAIL(any(), map()) :: {:ok, %{from: map()}} | {:error, charlist(), map()}
   def handle_MAIL(from, state) do
     Logger.info("MAIL from #{inspect(from)}")
 
@@ -111,7 +111,7 @@ defmodule Pique.Smtp do
   @doc """
   Handles MAIL extension requests. Does nothing.
   """
-  @spec handle_MAIL_extension(any, map) :: {:ok, map}
+  @spec handle_MAIL_extension(any(), map()) :: {:ok, map()}
   def handle_MAIL_extension(extension, state) do
     Logger.info("MAIL extensions #{inspect(extension)}")
     {:ok, state}
@@ -122,8 +122,8 @@ defmodule Pique.Smtp do
   If the `auth` config is set to true, it automatically adds in
   `AUTH` and `STARTTLS` extensions.
   """
-  @spec handle_RCPT(any, map) ::
-          {:ok, %{rcpt: nonempty_maybe_improper_list}} | {:error, charlist(), map}
+  @spec handle_RCPT(any(), map()) ::
+          {:ok, %{rcpt: nonempty_maybe_improper_list()}} | {:error, charlist(), map()}
   def handle_RCPT(to, state) do
     Logger.info("RCPT to #{inspect(to)}")
 
@@ -143,7 +143,7 @@ defmodule Pique.Smtp do
   @doc """
   Handles RCPT extension requests. Does nothing.
   """
-  @spec handle_RCPT_extension(any, map) :: {:ok, map}
+  @spec handle_RCPT_extension(any(), map()) :: {:ok, map()}
   def handle_RCPT_extension(extension, state) do
     Logger.info("RCPT extensions #{inspect(extension)}")
     {:ok, state}
@@ -153,7 +153,7 @@ defmodule Pique.Smtp do
   Handles RSET requests by removing the existing envelope
   information from the state.
   """
-  @spec handle_RSET(map) :: {:ok, map}
+  @spec handle_RSET(map()) :: {:ok, map()}
   def handle_RSET(state) do
     state =
       state
@@ -167,8 +167,7 @@ defmodule Pique.Smtp do
   @doc """
   Handles VRFY requests by telling people to go away.
   """
-  @spec handle_VRFY(any, any) ::
-          {:error, [32 | 50 | 53 | 78 | 101 | 111 | 114 | 115 | 116 | 117, ...], any}
+  @spec handle_VRFY(any(), map()) :: {:error, charlist(), map()}
   def handle_VRFY(address, state) do
     Logger.info("VRFY for #{inspect(address)}")
     {:error, ~c"252 Not sure", state}
@@ -179,8 +178,8 @@ defmodule Pique.Smtp do
   handler. If the AUTH handler returns an `{:ok, state}`. Otherwise
   returns relevant error messages.
   """
-  @spec handle_AUTH(any, any, any, any) :: {:ok, any} | {:error, charlist(), any}
-  def handle_AUTH(type, username, password, state) when type == :login or type == :plain do
+  @spec handle_AUTH(any(), any(), any(), map()) :: {:ok, any()} | {:error, charlist(), map()}
+  def handle_AUTH(type, username, password, state) when type in [:login, :plain] do
     Logger.info("AUTH request")
 
     case Kernel.apply(
@@ -203,6 +202,7 @@ defmodule Pique.Smtp do
     {:error, ~c"530 Use PLAIN or LOGIN", state}
   end
 
+  @spec handle_STARTTLS(map()) :: map()
   def handle_STARTTLS(state) do
     state
   end
@@ -211,19 +211,19 @@ defmodule Pique.Smtp do
   Handles incoming unkown request. Telling client that
   it does not understand.
   """
-  @spec handle_other(any(), any(), any()) :: {charlist(), any()}
+  @spec handle_other(any(), any(), map()) :: {charlist(), map()}
   def handle_other(command, _args, state) do
     Logger.info("other: #{inspect(command)}")
     {[~c"500 Error: command not recognized : '", command, ~c"'"], state}
   end
 
-  @spec handle_info(any(), any()) :: {:noreply, any()}
+  @spec handle_info(any(), map()) :: {:noreply, map()}
   def handle_info(info, state) do
     Logger.info("Info: #{inspect(info)}")
     {:noreply, state}
   end
 
-  @spec handle_error(any(), any(), any()) :: {:ok, any()}
+  @spec handle_error(any(), any(), map()) :: {:ok, map()}
   def handle_error(error_class, details, state) do
     Logger.warning("Error: #{inspect(error_class)}, #{inspect(details)}")
     {:ok, state}
@@ -233,7 +233,7 @@ defmodule Pique.Smtp do
   Handles hot swap code change (in theory). Does nothing in
   practice.
   """
-  @spec code_change(any(), any(), any()) :: {:ok, any()}
+  @spec code_change(any(), map(), any()) :: {:ok, map()}
   def code_change(_old, state, _extra) do
     {:ok, state}
   end
