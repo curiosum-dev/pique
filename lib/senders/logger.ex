@@ -10,6 +10,6 @@ defmodule Pique.Senders.Logger do
   @spec send(map) :: {:ok, String.t(), map}
   def send(state) do
     Logger.info("Current state: #{inspect(state)}")
-    {:ok, "Success", state}
+    {:ok, Map.get(state, :data, "Success"), state}
   end
 end
