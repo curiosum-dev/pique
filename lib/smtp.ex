@@ -28,12 +28,10 @@ defmodule Pique.Smtp do
     {:error, ~c"552 Message too small", state}
   end
 
-  @doc """
-  Handles incoming DATA request and passes it off to the defined DATA
-  handler. If the DATA handler returns an `{:ok, state}` then
-  passes the state to the defined send handler. Otherwise returns
-  relevant error messages.
-  """
+  # Handles incoming DATA request and passes it off to the defined DATA
+  # handler. If the DATA handler returns an `{:ok, state}` then
+  # passes the state to the defined send handler. Otherwise returns
+  # relevant error messages.
   @spec handle_DATA(any, any, String.t(), map) ::
           {:ok, String.t(), any} | {:error, charlist(), map}
   def handle_DATA(_from, _to, data, state) do
@@ -198,11 +196,9 @@ defmodule Pique.Smtp do
     end
   end
 
-  @doc """
-  Handles incoming AUTH request that do not use the PLAIN or
-  LOGIN type - looking at you CRAM-MD5. Telling client to use
-  PLAIN or LOGIN.
-  """
+  # Handles incoming AUTH request that do not use the PLAIN or
+  # LOGIN type - looking at you CRAM-MD5. Telling client to use
+  # PLAIN or LOGIN.
   def handle_AUTH(_type, _username, _password, state) do
     {:error, ~c"530 Use PLAIN or LOGIN", state}
   end
@@ -215,12 +211,19 @@ defmodule Pique.Smtp do
   Handles incoming unkown request. Telling client that
   it does not understand.
   """
-  @spec handle_other(any, any, any) :: {charlist(), any}
+  @spec handle_other(any(), any(), any()) :: {charlist(), any()}
   def handle_other(command, _args, state) do
     Logger.info("other: #{inspect(command)}")
     {[~c"500 Error: command not recognized : '", command, ~c"'"], state}
   end
 
+  @spec handle_info(any(), any()) :: {:noreply, any()}
+  def handle_info(info, state) do
+    Logger.info("Info: #{inspect(info)}")
+    {:noreply, state}
+  end
+
+  @spec handle_error(any(), any(), any()) :: {:ok, any()}
   def handle_error(error_class, details, state) do
     Logger.warning("Error: #{inspect(error_class)}, #{inspect(details)}")
     {:ok, state}
@@ -230,7 +233,7 @@ defmodule Pique.Smtp do
   Handles hot swap code change (in theory). Does nothing in
   practice.
   """
-  @spec code_change(any, any, any) :: {:ok, any}
+  @spec code_change(any(), any(), any()) :: {:ok, any()}
   def code_change(_old, state, _extra) do
     {:ok, state}
   end
@@ -238,9 +241,9 @@ defmodule Pique.Smtp do
   @doc """
   Handles session termination. Does nothing.
   """
-  @spec terminate(String.t(), map) :: {:ok, map}
+  @spec terminate(String.t(), map()) :: {:ok, String.t(), map()}
   def terminate(reason, state) do
     Logger.info("Terminating Session: #{inspect(reason)}")
-    {:ok, state}
+    {:ok, reason, state}
   end
 end
