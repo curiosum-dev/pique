@@ -64,7 +64,7 @@ defmodule Pique.Smtp do
   """
   @spec handle_EHLO(any, any, map) :: {:ok, [any], map}
   def handle_EHLO(hostname, extensions, state) do
-    Logger.info("EHLO from #{hostname}")
+    Logger.info("EHLO from #{inspect(hostname)}")
 
     case Application.get_env(:pique, :auth, false) do
       true ->
@@ -84,7 +84,7 @@ defmodule Pique.Smtp do
   """
   @spec handle_HELO(any, map) :: {:ok, 655_360, map}
   def handle_HELO(hostname, state) do
-    Logger.info("HELO from #{hostname}")
+    Logger.info("HELO from #{inspect(hostname)}")
     {:ok, 655_360, state}
   end
 
@@ -95,7 +95,7 @@ defmodule Pique.Smtp do
   """
   @spec handle_MAIL(any, map) :: {:ok, %{from: map}} | {:error, charlist(), map}
   def handle_MAIL(from, state) do
-    Logger.info("MAIL from #{from}")
+    Logger.info("MAIL from #{inspect(from)}")
 
     case Kernel.apply(
            Application.get_env(:pique, :mail_handler, Pique.Handlers.MAIL),
@@ -115,7 +115,7 @@ defmodule Pique.Smtp do
   """
   @spec handle_MAIL_extension(any, map) :: {:ok, map}
   def handle_MAIL_extension(extension, state) do
-    Logger.info(extension)
+    Logger.info("MAIL extensions #{inspect(extension)}")
     {:ok, state}
   end
 
@@ -127,7 +127,7 @@ defmodule Pique.Smtp do
   @spec handle_RCPT(any, map) ::
           {:ok, %{rcpt: nonempty_maybe_improper_list}} | {:error, charlist(), map}
   def handle_RCPT(to, state) do
-    Logger.info("RCPT to #{to}")
+    Logger.info("RCPT to #{inspect(to)}")
 
     case Kernel.apply(
            Application.get_env(:pique, :rcpt_handler, Pique.Handlers.RCPT),
@@ -147,7 +147,7 @@ defmodule Pique.Smtp do
   """
   @spec handle_RCPT_extension(any, map) :: {:ok, map}
   def handle_RCPT_extension(extension, state) do
-    Logger.info(extension)
+    Logger.info("RCPT extensions #{inspect(extension)}")
     {:ok, state}
   end
 
@@ -240,7 +240,7 @@ defmodule Pique.Smtp do
   """
   @spec terminate(String.t(), map) :: {:ok, map}
   def terminate(reason, state) do
-    Logger.info("Terminating Session: #{reason}")
+    Logger.info("Terminating Session: #{inspect(reason)}")
     {:ok, state}
   end
 end
