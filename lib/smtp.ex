@@ -213,13 +213,12 @@ defmodule Pique.Smtp do
   """
   @spec handle_other(any(), any(), map()) :: {charlist(), map()}
   def handle_other(command, _args, state) do
-    Logger.info("other: #{inspect(command)}")
+    Logger.warning("Command not recognized: #{inspect(command)}")
     {[~c"500 Error: command not recognized : '", command, ~c"'"], state}
   end
 
   @spec handle_info(any(), map()) :: {:noreply, map()}
-  def handle_info(info, state) do
-    Logger.info("Info: #{inspect(info)}")
+  def handle_info(_info, state) do
     {:noreply, state}
   end
 
@@ -243,7 +242,7 @@ defmodule Pique.Smtp do
   """
   @spec terminate(String.t(), map()) :: {:ok, String.t(), map()}
   def terminate(reason, state) do
-    Logger.info("Terminating Session: #{inspect(reason)}")
+    Logger.info("Terminating session: #{inspect(reason)}")
     {:ok, reason, state}
   end
 end

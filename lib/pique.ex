@@ -21,11 +21,13 @@ defmodule Pique do
   ```
   """
   require Logger
+
   use Application
 
   @spec start(any, any) :: {:error, any} | {:ok, pid}
   def start(_type, _args) do
     smtp_options = Application.get_env(:pique, :smtp_opts, [])
+    Logger.info("Starting SMTP server on #{Keyword.get(smtp_options, :port, 2525)} port")
 
     children = [
       %{
